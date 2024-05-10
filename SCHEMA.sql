@@ -1,0 +1,141 @@
+create database Social_media
+use Social_media
+
+---CREATE USERS TABLE
+CREATE TABLE USERS(
+USER_ID INT IDENTITY(1,1) NOT NULL,
+USER_NAME VARCHAR(255) NOT NULL,
+PROFILE_PHOTO_URL VARCHAR(255) DEFAULT 'https://picsum.photos/100',
+BIO VARCHAR(255),
+CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
+CONSTRAINT ID_PK PRIMARY KEY(USER_ID),
+CONSTRAINT NAME_UNQ UNIQUE(USER_NAME))
+
+ALTER TABLE users
+ADD email VARCHAR(30) NOT NULL;
+
+---CREATE TABLE PHOTOS--
+
+CREATE TABLE PHOTOS(
+PHOTO_ID INT IDENTITY(1,1) NOT NULL,
+PHOTO_URL VARCHAR(255) NOT NULL,
+POST_ID INT NOT NULL,
+CREATED_AT DATETIME DEFAULT CURRENT_TIMESTAMP,
+SIZE FLOAT ,
+CONSTRAINT PHOTOID_PK PRIMARY KEY(PHOTO_ID),
+CONSTRAINT URL_UNQ UNIQUE(PHOTO_URL),
+CONSTRAINT SIZE_CHK CHECK(SIZE<5))
+
+
+--CREATING VIDEOS TABLE--
+CREATE TABLE videos (
+  video_id INTEGER IDENTITY(1,1) PRIMARY KEY,
+  video_url VARCHAR(255) NOT NULL UNIQUE,
+  post_id INTEGER NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  size FLOAT CHECK (size<10))
+
+--CREATING POST TABLE--
+CREATE TABLE post (
+	post_id INTEGER IDENTITY(1,1) PRIMARY KEY,
+    photo_id INTEGER,
+    video_id INTEGER,
+    user_id INTEGER NOT NULL,
+    caption VARCHAR(200), 
+    location VARCHAR(50) ,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+	FOREIGN KEY(photo_id) REFERENCES photos(photo_id),
+    FOREIGN KEY(video_id) REFERENCES videos(video_id)
+);
+
+---CREATING COMMENTS TABLE---
+
+CREATE TABLE comments (
+    comment_id INTEGER IDENTITY(1,1) PRIMARY KEY,
+    comment_text VARCHAR(255) NOT NULL,
+    post_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(post_id) REFERENCES post(post_id),
+    FOREIGN KEY(user_id) REFERENCES users(user_id)
+);
+
+--CREATING POST_LIKES TABLE---
+
+CREATE TABLE post_likes (
+    user_id INTEGER NOT NULL,
+    post_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    FOREIGN KEY(post_id) REFERENCES post(post_id),
+    PRIMARY KEY(user_id, post_id)
+);
+
+----CREATING COMMENT_LIKES---
+
+CREATE TABLE comment_likes (
+    user_id INTEGER NOT NULL,
+    comment_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    FOREIGN KEY(comment_id) REFERENCES comments(comment_id),
+    PRIMARY KEY(user_id, comment_id)
+);
+
+--CREATING FOLLOWS TABLE--
+CREATE TABLE follows (
+    follower_id INTEGER NOT NULL,
+    followee_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(follower_id) REFERENCES users(user_id),
+    FOREIGN KEY(followee_id) REFERENCES users(user_id),
+    PRIMARY KEY(follower_id, followee_id)
+);
+
+--CREATING HASHTAGS TABLE--
+
+CREATE TABLE hashtags (
+  hashtag_id INTEGER IDENTITY(1,1) NOT NULL,
+  hashtag_name VARCHAR(255) UNIQUE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (HASHTAG_ID)
+);
+
+--CREATING HASHTAGFOLLOW TABLE--
+CREATE TABLE hashtag_follow (
+	user_id INTEGER NOT NULL,
+    hashtag_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(user_id),
+    FOREIGN KEY(hashtag_id) REFERENCES hashtags(hashtag_id),
+    PRIMARY KEY(user_id, hashtag_id)
+);
+
+--CREATING POSTTAGS TABLE---
+CREATE TABLE post_tags (
+    post_id INTEGER NOT NULL,
+    hashtag_id INTEGER NOT NULL,
+    FOREIGN KEY(post_id) REFERENCES post(post_id),
+    FOREIGN KEY(hashtag_id) REFERENCES hashtags(hashtag_id),
+    PRIMARY KEY(post_id, hashtag_id)
+);
+
+--CREATING BOOKMARKS TABLE--
+CREATE TABLE bookmarks (
+  post_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(post_id) REFERENCES post(post_id),
+  FOREIGN KEY(user_id) REFERENCES users(user_id),
+  PRIMARY KEY(user_id, post_id)
+);
+
+--CREATING LOGIN TABLE--
+CREATE TABLE login (
+  login_id INTEGER NOT NULL IDENTITY(1,1) PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  ip VARCHAR(50) NOT NULL,
+  login_time DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(user_id) REFERENCES users(user_id)
+);
