@@ -1,2 +1,2 @@
-This is a sql project on social media data.
+This is a sql project on social media data.<br>
 Author- Akshayavanan T
