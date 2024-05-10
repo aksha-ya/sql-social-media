@@ -4,5 +4,5 @@ The queries provided here analysis things like:<br>
   Most follwed user<br>
   Most liked posts<br>
   Most active user<br>
-  User that never comments and many more
+  User that never comments and many more<br>
 Author- Akshaya
